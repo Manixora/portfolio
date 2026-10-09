@@ -1,110 +1,116 @@
-// Mobile Menu
+// ========== MOBILE MENU ==========
 const menuIcon = document.querySelector("#menu-icon");
 const navbar = document.querySelector(".navbar");
 
 menuIcon.onclick = () => {
     menuIcon.classList.toggle("fa-xmark");
+    menuIcon.classList.toggle("fa-bars");
     navbar.classList.toggle("active");
 };
 
-// Active Navbar on Scroll
+// Menu link click hone pe menu band karo
+document.querySelectorAll(".navbar a").forEach(link => {
+    link.addEventListener("click", () => {
+        menuIcon.classList.remove("fa-xmark");
+        menuIcon.classList.add("fa-bars");
+        navbar.classList.remove("active");
+    });
+});
+
+// ========== ACTIVE NAVBAR ON SCROLL ==========
 let sections = document.querySelectorAll("section");
 let navLinks = document.querySelectorAll(".navbar a");
 
 window.onscroll = () => {
+    let top = window.scrollY;
 
     sections.forEach(sec => {
-
-        let top = window.scrollY;
-        let offset = sec.offsetTop - 150;
+        let offset = sec.offsetTop - 200;
         let height = sec.offsetHeight;
         let id = sec.getAttribute("id");
 
-        if(top >= offset && top < offset + height){
-
-            navLinks.forEach(link=>{
+        if (top >= offset && top < offset + height) {
+            navLinks.forEach(link => {
                 link.classList.remove("active");
-                document.querySelector(".navbar a[href*="+id+"]")
-                .classList.add("active");
+                const activeLink = document.querySelector(`.navbar a[href="#${id}"]`);
+                if (activeLink) activeLink.classList.add("active");
             });
-
         }
-
     });
 
     // Sticky Header
     let header = document.querySelector(".header");
     header.classList.toggle("sticky", window.scrollY > 100);
-
-    // Close Menu
-    menuIcon.classList.remove("fa-xmark");
-    navbar.classList.remove("active");
-
 };
 
-// Smooth Scroll
+// ========== SMOOTH SCROLL ==========
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener("click", function(e){
-        e.preventDefault();
-
-        document.querySelector(this.getAttribute("href"))
-        .scrollIntoView({
-            behavior:"smooth"
-        });
+    anchor.addEventListener("click", function (e) {
+        const target = document.querySelector(this.getAttribute("href"));
+        if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: "smooth" });
+        }
     });
 });
 
-// Typing Effect
+// ========== TYPING EFFECT ==========
 const text = [
-    "Software Engineering",
+    "Full Stack Developer",
     "Web Developer",
-    
-    "AI /ML"
+    "AI / ML Enthusiast",
+    "BCA Student"
 ];
 
 let index = 0;
 let char = 0;
+let isDeleting = false;
 
 const typing = document.querySelector(".home-content h3 span");
 
-function type(){
+function type() {
+    const current = text[index];
 
-    if(char < text[index].length){
-
-        typing.textContent += text[index].charAt(char);
+    if (!isDeleting) {
+        typing.textContent = current.substring(0, char + 1);
         char++;
-        setTimeout(type,100);
 
-    }else{
-
-        setTimeout(erase,1500);
-
-    }
-
-}
-
-function erase(){
-
-    if(char > 0){
-
-        typing.textContent = text[index].substring(0,char-1);
+        if (char === current.length) {
+            isDeleting = true;
+            setTimeout(type, 1500);
+        } else {
+            setTimeout(type, 100);
+        }
+    } else {
+        typing.textContent = current.substring(0, char - 1);
         char--;
 
-        setTimeout(erase,50);
-
-    }else{
-
-        index++;
-
-        if(index >= text.length){
-            index = 0;
+        if (char === 0) {
+            isDeleting = false;
+            index++;
+            if (index >= text.length) index = 0;
+            setTimeout(type, 300);
+        } else {
+            setTimeout(type, 50);
         }
-
-        setTimeout(type,300);
-
     }
-
 }
 
-typing.textContent="";
-type();
+typing.textContent = "";
+setTimeout(type, 500);
+
+// ========== FOOTER YEAR ==========
+const yearSpan = document.getElementById("year");
+if (yearSpan) {
+    yearSpan.textContent = new Date().getFullYear();
+}
+
+// ========== CONTACT FORM FEEDBACK ==========
+const contactForm = document.querySelector(".contact-form");
+if (contactForm) {
+    contactForm.addEventListener("submit", () => {
+        const btn = contactForm.querySelector("button");
+        btn.textContent = "Sending...";
+        btn.disabled = true;
+    });
+}
